@@ -1,5 +1,6 @@
 package org.example.brtservice.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.entities.Cdr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class BrtConsumerService {
 
-    private static final Logger log = LoggerFactory.getLogger(BrtConsumerService.class);
+
     private final SubscriberService subscriberRepository;
 
     public BrtConsumerService(SubscriberService subscriberRepository) {

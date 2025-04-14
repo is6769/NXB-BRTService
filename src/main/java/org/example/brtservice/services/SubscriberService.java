@@ -1,8 +1,8 @@
 package org.example.brtservice.services;
 
 
-import org.example.cdrservice.entitites.Subscriber;
-import org.example.cdrservice.repositories.SubscriberRepository;
+import org.example.brtservice.entities.Subscriber;
+import org.example.brtservice.repositories.SubscriberRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
