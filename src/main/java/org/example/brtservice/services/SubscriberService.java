@@ -1,6 +1,8 @@
 package org.example.brtservice.services;
 
 
+import org.example.brtservice.clients.HRSServiceClient;
+import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.repositories.SubscriberRepository;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,11 @@ import java.util.List;
 public class SubscriberService {
 
     private final SubscriberRepository subscriberRepository;
+    private final HRSServiceClient hrsServiceClient;
 
-    public SubscriberService(SubscriberRepository subscriberRepository) {
+    public SubscriberService(SubscriberRepository subscriberRepository, HRSServiceClient hrsServiceClient) {
         this.subscriberRepository = subscriberRepository;
+        this.hrsServiceClient = hrsServiceClient;
     }
 
     /**
@@ -30,4 +34,8 @@ public class SubscriberService {
     }
 
 
+    public void createSubscriber(SubscriberDTO subscriberDTO) {
+        var tariff = hrsServiceClient.findTariffById(subscriberDTO.tariffId());
+
+    }
 }

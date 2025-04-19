@@ -2,6 +2,7 @@ package org.example.brtservice.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.entities.Cdr;
+import org.example.brtservice.repositories.CdrRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,6 +18,7 @@ public class BrtConsumerService {
 
     private final SubscriberService subscriberRepository;
 
+
     public BrtConsumerService(SubscriberService subscriberRepository) {
         this.subscriberRepository = subscriberRepository;
     }
@@ -24,12 +26,19 @@ public class BrtConsumerService {
 
     @RabbitListener(queues = "cdr.queue")
     public void consumeCdr(List<Cdr> cdrs){
-        log.info(cdrs.toString());
-        log.info("CONSUMED");
+        processOurSubscribersCdr(cdrs);
     }
 
-    public void saveOurSubscribersCdr(List<Cdr> cdrs){
+    private void processOurSubscribersCdr(List<Cdr> cdrs){
         List<Cdr> ourCdrs = new ArrayList<>();
-        //cdrs.forEach(cdr -> );
+        cdrs.forEach(cdr -> {
+            if (isOur(cdr)){
+
+            }
+        });
+    }
+
+    private boolean isOur(Cdr cdr) {
+        if ()
     }
 }

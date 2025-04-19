@@ -2,9 +2,13 @@ package org.example.brtservice.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -20,6 +24,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "subscribers")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Subscriber {
@@ -43,5 +48,24 @@ public class Subscriber {
      */
     @Column(name = "msisdn", unique = true, nullable = false)
     private String msisdn;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "second_name")
+    private String secondName;
+
+    @Column(name = "surname", nullable = false)
+    private String surname;
+
+    @Column(name = "tariff_id")
+    private Long tariffId;
+
+    @Column(name = "balance")
+    private BigDecimal balance = new BigDecimal(100);
+
+    @Column(name = "registered_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    private LocalDateTime registeredAt;
 
 }
