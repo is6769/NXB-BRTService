@@ -35,7 +35,11 @@ public class SubscriberService {
 
 
     public void createSubscriber(SubscriberDTO subscriberDTO) {
-        var tariff = hrsServiceClient.findTariffById(subscriberDTO.tariffId());
+        //var tariff = hrsServiceClient.findTariffById(subscriberDTO.tariffId());
 
+    }
+
+    public boolean isSubscriberPresent(String msisdn){
+        return subscriberRepository.findSubscriberByMsisdn(msisdn).isPresent();
     }
 }
