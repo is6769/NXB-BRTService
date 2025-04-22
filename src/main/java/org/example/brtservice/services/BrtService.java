@@ -3,6 +3,7 @@ package org.example.brtservice.services;
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.clients.HRSServiceClient;
 import org.example.brtservice.dtos.CdrWithMetadataDTO;
+import org.example.brtservice.dtos.TarifficationBillDTO;
 import org.example.brtservice.entities.Cdr;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
@@ -33,12 +34,12 @@ public class BrtService {
     }
 
     private void processOurSubscribersCdr(List<Cdr> cdrs){
-        List<Cdr> ourCdrs = new ArrayList<>();
         cdrs.forEach(cdr -> {
             if (isOur(cdr)){
                 cdrService.save(cdr);
                 CdrWithMetadataDTO cdrWithMetadataDTO = cdrService.convertToCdrWithMetadataDTO(cdr);
-                hrsServiceClient.tarificateCdr(cdrWithMetadataDTO);
+                TarifficationBillDTO tarifficationBillDTO = hrsServiceClient.chargeCdr(cdrWithMetadataDTO);
+                subscriberService.subtractAmountFromBalance(cdrWithMetadataDTO.servicedMsisdn(),tarifficationBillDTO.amount());
             }
         });
     }

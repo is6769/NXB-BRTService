@@ -1,27 +1,41 @@
 package org.example.brtservice.clients;
 
 import org.example.brtservice.dtos.CdrWithMetadataDTO;
+import org.example.brtservice.dtos.TarifficationBillDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import java.time.LocalDateTime;
 
 @Component
 public class HRSServiceClient {
 
     private final RestClient restClient;
 
-    @Value("${const.hrs-service.BASE_URI}")
-    private String BASE_URI;
+    @Value("${const.hrs-service.BASE_URL}")
+    private String BASE_URL;
 
     public HRSServiceClient(RestClient restClient) {
         this.restClient = restClient;
     }
 
-    public String tarificateCdr(CdrWithMetadataDTO cdrWithMetadataDTO){
+    public TarifficationBillDTO chargeCdr(CdrWithMetadataDTO cdrWithMetadataDTO){
         return restClient
                 .post()
-                .uri(BASE_URI)
+                .uri(BASE_URL)
                 .retrieve()
-                .body(String.class);
+                .body(TarifficationBillDTO.class);
+    }
+
+    public TarifficationBillDTO setTariffForSubscriber(Long subscriberId, Long tariffId, LocalDateTime currentUnrealDateTime){
+        return restClient
+                .put()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URL+"/subscribers/{subscriberId}/tariff/{tariffId}")
+                        .queryParam("currentUnrealDateTime",currentUnrealDateTime)
+                        .build(subscriberId,tariffId))
+                .retrieve()
+                .body(TarifficationBillDTO.class);
     }
 }
