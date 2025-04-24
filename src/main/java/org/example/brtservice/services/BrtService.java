@@ -28,8 +28,9 @@ public class BrtService {
     }
 
 
-    @RabbitListener(queues = "cdr.queue")
+    @RabbitListener(queues = "${const.rabbitmq.CDR_QUEUE_NAME}")
     public void consumeCdr(List<Cdr> cdrs){
+        log.info(cdrs.toString());
         processOurSubscribersCdr(cdrs);
     }
 
