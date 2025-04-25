@@ -1,12 +1,14 @@
 package org.example.brtservice.services;
 
-import org.example.brtservice.dtos.CdrWithMetadataDTO;
-import org.example.brtservice.embedded.DefaultCdrMetadata;
+import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
+import org.example.brtservice.embedded.DefaultCallMetadata;
 import org.example.brtservice.entities.Cdr;
+import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.repositories.CdrRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Service
 public class CdrService {
@@ -23,31 +25,26 @@ public class CdrService {
         cdrRepository.save(cdr);
     }
 
-    public CdrWithMetadataDTO convertToCdrWithMetadataDTO(Cdr cdr) {
-        CdrWithMetadataDTO cdrWithMetadataDTO = CdrWithMetadataDTO.builder()
-                .id(cdr.getId())
-                .callType(cdr.getCallType())
-                .servicedMsisdn(cdr.getServicedMsisdn())
-                .otherMsisdn(cdr.getOtherMsisdn())
-                .startDateTime(cdr.getStartDateTime())
-                .finishDateTime(cdr.getFinishDateTime())
-                .cdrMetadata(
-                        new DefaultCdrMetadata(
-                                (int) Math.ceil(Duration.between(cdr.getFinishDateTime(), cdr.getStartDateTime()).toSeconds()),
-                                null
-                        )
-                )
-                .build();
+    public CallWithDefaultMetadataDTO convertToCallWithDefaultMetadataDTO(Cdr cdr) {
 
+        Subscriber subscriber = subscriberService.findSubscriberByMsisdn(cdr.getServicedMsisdn()).orElseThrow(RuntimeException::new);
         boolean isOtherOur = subscriberService.isSubscriberPresent(cdr.getOtherMsisdn());
 
-        if (isOtherOur){
-            cdrWithMetadataDTO.cdrMetadata().setOtherOperator("Ромашка");
-        }else {
-            cdrWithMetadataDTO.cdrMetadata().setOtherOperator("Other");
-        }
+        DefaultCallMetadata defaultCallMetadata = new DefaultCallMetadata(
+                cdr.getId(),
+                cdr.getCallType(),
+                cdr.getServicedMsisdn(),
+                cdr.getOtherMsisdn(),
+                cdr.getStartDateTime(),
+                cdr.getFinishDateTime(),
+                calculateDurationInMinutes(cdr.getStartDateTime(),cdr.getFinishDateTime()),
+                (isOtherOur) ? "Ромашка" : "Other"
+        );
 
+        return new CallWithDefaultMetadataDTO(subscriber.getId(), defaultCallMetadata);
+    }
 
-        return cdrWithMetadataDTO;
+    private Integer calculateDurationInMinutes(LocalDateTime start, LocalDateTime finish){
+        return (int) Math.ceil(Duration.between(finish, start).toSeconds());
     }
 }

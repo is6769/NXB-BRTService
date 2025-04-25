@@ -13,15 +13,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration
-public class RabbitMQConfig {
+public class CdrRabbitMQConfig {
 
-    @Value("${const.rabbitmq.CDR_QUEUE_NAME}")
+    @Value("${const.rabbitmq.cdr.CDR_QUEUE_NAME}")
     private String CDR_QUEUE_NAME;
 
-    @Value("${const.rabbitmq.CDR_EXCHANGE_NAME}")
+    @Value("${const.rabbitmq.cdr.CDR_EXCHANGE_NAME}")
     private String CDR_EXCHANGE_NAME;
 
-    @Value("${const.rabbitmq.CDR_ROUTING_KEY}")
+    @Value("${const.rabbitmq.cdr.CDR_ROUTING_KEY}")
     private String CDR_ROUTING_KEY;
 
     @Bean
@@ -40,10 +40,5 @@ public class RabbitMQConfig {
                 .bind(cdrQueue())
                 .to(cdrExchange())
                 .with(CDR_ROUTING_KEY);
-    }
-
-    @Bean
-    public MessageConverter jsonMessageConverter(Jackson2ObjectMapperBuilder builder) {
-        return new Jackson2JsonMessageConverter(builder.build());
     }
 }

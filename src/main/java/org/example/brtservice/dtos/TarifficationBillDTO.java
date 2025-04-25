@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public record TarifficationBillDTO(
         BigDecimal amount,
-        String unit
+        String unit,
+        Long subscriberId
 ) {
 }

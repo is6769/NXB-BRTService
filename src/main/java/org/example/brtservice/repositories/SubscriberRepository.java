@@ -42,4 +42,6 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
      * @return Optional, содержащий найденного абонента, или пустой Optional, если абонент не найден
      */
     Optional<Subscriber> findSubscriberByMsisdn(String msisdn);
+
+    Subscriber findSubscriberById(Long id);
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис для работы с абонентами.
@@ -42,13 +43,22 @@ public class SubscriberService {
         //var tariff = hrsServiceClient.findTariffById(subscriberDTO.tariffId());
     }
 
+    public Optional<Subscriber> findSubscriberByMsisdn(String msisdn){
+        return subscriberRepository.findSubscriberByMsisdn(msisdn);
+    }
+
     public void addAmountToBalance(BigDecimal chargeAmount){
 
     }
 
-    public void subtractAmountFromBalance(String msisdn, BigDecimal chargeAmount){
-        Subscriber subscriber = subscriberRepository.findSubscriberByMsisdn(msisdn).orElseThrow(RuntimeException::new);
+//    public void subtractAmountFromBalance(String msisdn, BigDecimal chargeAmount){
+//        Subscriber subscriber = subscriberRepository.findSubscriberByMsisdn(msisdn).orElseThrow(RuntimeException::new);
+//        subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
+//    }
+    public void subtractAmountFromBalance(Long subscriberId, BigDecimal chargeAmount){
+        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
         subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
+        subscriberRepository.save(subscriber);
     }
 
     public boolean isSubscriberPresent(String msisdn){

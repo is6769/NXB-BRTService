@@ -1,6 +1,6 @@
 package org.example.brtservice.clients;
 
-import org.example.brtservice.dtos.CdrWithMetadataDTO;
+import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
 import org.example.brtservice.dtos.TarifficationBillDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ public class HRSServiceClient {
         this.restClient = restClient;
     }
 
-    public TarifficationBillDTO chargeCdr(CdrWithMetadataDTO cdrWithMetadataDTO){
+    public TarifficationBillDTO chargeCdr(CallWithDefaultMetadataDTO callWithDefaultMetadataDTO){
         return restClient
                 .post()
                 .uri(BASE_URL)
