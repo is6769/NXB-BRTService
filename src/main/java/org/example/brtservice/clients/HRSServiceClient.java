@@ -1,41 +1,59 @@
 package org.example.brtservice.clients;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
 import org.example.brtservice.dtos.TarifficationBillDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Component
 public class HRSServiceClient {
 
-    private final RestClient restClient;
+    private final RestClient.Builder restClientBuilder;
 
     @Value("${const.hrs-service.BASE_URL}")
     private String BASE_URL;
 
-    public HRSServiceClient(RestClient restClient) {
-        this.restClient = restClient;
+    public HRSServiceClient(RestClient.Builder restClientBuilder) {
+        this.restClientBuilder = restClientBuilder;
     }
 
     public TarifficationBillDTO chargeCdr(CallWithDefaultMetadataDTO callWithDefaultMetadataDTO){
-        return restClient
+        return restClientBuilder
+                .build()
                 .post()
                 .uri(BASE_URL)
                 .retrieve()
                 .body(TarifficationBillDTO.class);
     }
 
-    public TarifficationBillDTO setTariffForSubscriber(Long subscriberId, Long tariffId, LocalDateTime currentUnrealDateTime){
-        return restClient
+    public TarifficationBillDTO setTariffForSubscriber(Long subscriberId, Long tariffId, LocalDateTime systemDatetime){
+        return restClientBuilder
+                .build()
                 .put()
-                .uri(uriBuilder -> uriBuilder
-                        .path(BASE_URL+"/subscribers/{subscriberId}/tariff/{tariffId}")
-                        .queryParam("currentUnrealDateTime",currentUnrealDateTime)
+                .uri(BASE_URL,uriBuilder -> uriBuilder
+                        .path("/subscribers/{subscriberId}/tariff/{tariffId}")
+                        .queryParam("currentUnrealDateTime",systemDatetime)
                         .build(subscriberId,tariffId))
                 .retrieve()
                 .body(TarifficationBillDTO.class);
+    }
+
+    public LocalDateTime getSystemDatetime() {
+        return restClientBuilder
+                .build()
+                .get()
+                .uri(BASE_URL,uriBuilder -> uriBuilder
+                        .path("/systemDatetime")
+                        .build())
+                //.uri(URI.create(BASE_URL+"/systemDatetime"))
+                .retrieve()
+                .body(LocalDateTime.class);
     }
 }

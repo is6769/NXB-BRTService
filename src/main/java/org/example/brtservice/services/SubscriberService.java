@@ -1,6 +1,7 @@
 package org.example.brtservice.services;
 
 
+import jakarta.transaction.Transactional;
 import org.example.brtservice.clients.HRSServiceClient;
 import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.entities.Subscriber;
@@ -37,10 +38,14 @@ public class SubscriberService {
     }
 
 
+    @Transactional
     public void createSubscriber(SubscriberDTO subscriberDTO) {
-        Subscriber savedSubscriber = subscriberRepository.save(subscriberDTO.toEntity());
-        hrsServiceClient.setTariffForSubscriber(savedSubscriber.getId(),savedSubscriber.getTariffId(), LocalDateTime.now());
-        //var tariff = hrsServiceClient.findTariffById(subscriberDTO.tariffId());
+        LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
+        Subscriber newSubscriber = subscriberDTO.toEntity();
+        newSubscriber.setRegisteredAt(systemDatetime);
+        newSubscriber = subscriberRepository.save(newSubscriber);
+        hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
+
     }
 
     public Optional<Subscriber> findSubscriberByMsisdn(String msisdn){

@@ -18,7 +18,7 @@ public class SubscribersRestController {
         this.subscriberService = subscriberService;
     }
 
-    @PostMapping("subscribers")
+    @PostMapping("subscriber")
     public String createSubscriber(SubscriberDTO subscriberDTO){
         subscriberService.createSubscriber(subscriberDTO);
         return "Successfully created subscriber";
