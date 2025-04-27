@@ -1,22 +1,26 @@
 package org.example.brtservice.services;
 
 
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.clients.HRSServiceClient;
 import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.repositories.SubscriberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
  * Сервис для работы с абонентами.
  * Предоставляет методы для поиска и проверки существования абонентов.
  */
+@Slf4j
 @Service
 public class SubscriberService {
 
@@ -38,12 +42,14 @@ public class SubscriberService {
     }
 
 
-    @Transactional
     public void createSubscriber(SubscriberDTO subscriberDTO) {
         LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
         Subscriber newSubscriber = subscriberDTO.toEntity();
         newSubscriber.setRegisteredAt(systemDatetime);
         newSubscriber = subscriberRepository.save(newSubscriber);
+
+        if (Objects.isNull(subscriberRepository.findSubscriberById(newSubscriber.getId()))) throw new RuntimeException();
+
         hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
 
     }
@@ -52,17 +58,20 @@ public class SubscriberService {
         return subscriberRepository.findSubscriberByMsisdn(msisdn);
     }
 
-    public void addAmountToBalance(BigDecimal chargeAmount){
-
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void addAmountToBalance(Long subscriberId, BigDecimal chargeAmount){
+        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
+        subscriber.setBalance(subscriber.getBalance().add(chargeAmount));
+        subscriberRepository.save(subscriber);
     }
 
-//    public void subtractAmountFromBalance(String msisdn, BigDecimal chargeAmount){
-//        Subscriber subscriber = subscriberRepository.findSubscriberByMsisdn(msisdn).orElseThrow(RuntimeException::new);
-//        subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
-//    }
-    //TODO sync
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void subtractAmountFromBalance(Long subscriberId, BigDecimal chargeAmount){
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
+        if (subscriber==null) {
+            log.error(subscriberId.toString());
+            log.error(subscriberRepository.findAll().toString());
+        }
         subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
         subscriberRepository.save(subscriber);
     }

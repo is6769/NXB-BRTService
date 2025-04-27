@@ -33,7 +33,7 @@ public class HRSServiceClient {
                 .body(TarifficationBillDTO.class);
     }
 
-    public TarifficationBillDTO setTariffForSubscriber(Long subscriberId, Long tariffId, LocalDateTime systemDatetime){
+    public String setTariffForSubscriber(Long subscriberId, Long tariffId, LocalDateTime systemDatetime){
         return restClientBuilder
                 .build()
                 .put()
@@ -42,7 +42,7 @@ public class HRSServiceClient {
                         .queryParam("currentUnrealDateTime",systemDatetime)
                         .build(subscriberId,tariffId))
                 .retrieve()
-                .body(TarifficationBillDTO.class);
+                .body(String.class);
     }
 
     public LocalDateTime getSystemDatetime() {
