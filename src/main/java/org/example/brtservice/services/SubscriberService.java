@@ -60,6 +60,7 @@ public class SubscriberService {
 //        Subscriber subscriber = subscriberRepository.findSubscriberByMsisdn(msisdn).orElseThrow(RuntimeException::new);
 //        subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
 //    }
+    //TODO sync
     public void subtractAmountFromBalance(Long subscriberId, BigDecimal chargeAmount){
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
         subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CdrService {
@@ -23,6 +24,10 @@ public class CdrService {
 
     public void save(Cdr cdr){
         cdrRepository.save(cdr);
+    }
+
+    public void saveAndFlush(Cdr cdr){
+        cdrRepository.saveAndFlush(cdr);
     }
 
     public CallWithDefaultMetadataDTO convertToCallWithDefaultMetadataDTO(Cdr cdr) {
@@ -45,6 +50,10 @@ public class CdrService {
     }
 
     private Integer calculateDurationInMinutes(LocalDateTime start, LocalDateTime finish){
-        return (int) Math.ceil(Duration.between(finish, start).toSeconds());
+        return (int) Math.ceil(Duration.between(start, finish).toSeconds()/60.0);
+    }
+
+    public void saveAll(List<Cdr> validCdrs) {
+        cdrRepository.saveAll(validCdrs);
     }
 }

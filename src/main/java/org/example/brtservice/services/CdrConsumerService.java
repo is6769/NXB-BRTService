@@ -1,5 +1,6 @@
 package org.example.brtservice.services;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
 import org.example.brtservice.entities.Cdr;
@@ -8,6 +9,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,8 +45,6 @@ public class CdrConsumerService {
                 CallWithDefaultMetadataDTO callWithDefaultMetadataDTO = cdrService.convertToCallWithDefaultMetadataDTO(cdr);
                 rabbitTemplate.convertAndSend(TARIFFICATION_EXCHANGE_NAME,CALL_USAGE_ROUTING_KEY, callWithDefaultMetadataDTO);
                 cdrService.save(cdr);
-                //TarifficationBillDTO tarifficationBillDTO = hrsServiceClient.chargeCdr(callWithDefaultMetadataDTO);
-                //subscriberService.subtractAmountFromBalance(callWithDefaultMetadataDTO.servicedMsisdn(),tarifficationBillDTO.amount());
             }
         });
     }
