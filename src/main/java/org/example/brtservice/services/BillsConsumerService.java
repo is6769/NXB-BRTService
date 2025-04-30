@@ -16,7 +16,7 @@ public class BillsConsumerService {
         this.subscriberService = subscriberService;
     }
 
-    @RabbitListener(queues = "${const.rabbitmq.bills.BILLS_QUEUE_NAME}")
+    @RabbitListener(queues = "${const.rabbitmq.bills.BILLS_QUEUE_NAME}", errorHandler = "rabbitExceptionsHandler")
     public void consumeBill(TarifficationBillDTO bill){
         log.info(bill.toString());
         subscriberService.subtractAmountFromBalance(bill.subscriberId(),bill.amount());

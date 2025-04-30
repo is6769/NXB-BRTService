@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.clients.HRSServiceClient;
 import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.entities.Subscriber;
+import org.example.brtservice.exceptions.NoSuchSubscriberException;
+import org.example.brtservice.exceptions.SubscriberCreationFailedException;
 import org.example.brtservice.repositories.SubscriberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -48,7 +50,7 @@ public class SubscriberService {
         newSubscriber.setRegisteredAt(systemDatetime);
         newSubscriber = subscriberRepository.save(newSubscriber);
 
-        if (Objects.isNull(subscriberRepository.findSubscriberById(newSubscriber.getId()))) throw new RuntimeException();
+        if (Objects.isNull(subscriberRepository.findSubscriberById(newSubscriber.getId()))) throw new SubscriberCreationFailedException("Cant set tariff for subscriber. Subscriber was not saved.");
 
         hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
 
@@ -68,10 +70,7 @@ public class SubscriberService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void subtractAmountFromBalance(Long subscriberId, BigDecimal chargeAmount){
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
-        if (subscriber==null) {
-            log.error(subscriberId.toString());
-            log.error(subscriberRepository.findAll().toString());
-        }
+        if (Objects.isNull(subscriber)) throw new NoSuchSubscriberException("Cant subtract such amount from balance. No such subscriber present.");
         subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
         subscriberRepository.save(subscriber);
     }

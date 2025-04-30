@@ -46,15 +46,10 @@ public class Cdr {
     @Column(name = "call_type", nullable = false)
     private String callType;
 
-    /**
-     * Номер телефона вызывающего абонента.
-     */
+
     @Column(name = "serviced_msisdn", nullable = false)
     private String servicedMsisdn;
 
-    /**
-     * Номер телефона вызываемого абонента.
-     */
     @Column(name = "other_msisdn", nullable = false)
     private String otherMsisdn;
 

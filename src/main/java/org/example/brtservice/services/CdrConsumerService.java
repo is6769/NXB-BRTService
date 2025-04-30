@@ -33,7 +33,7 @@ public class CdrConsumerService {
     }
 
 
-    @RabbitListener(queues = "${const.rabbitmq.cdr.CDR_QUEUE_NAME}")
+    @RabbitListener(queues = "${const.rabbitmq.cdr.CDR_QUEUE_NAME}", errorHandler = "rabbitExceptionsHandler")
     public void consumeCdr(List<Cdr> cdrs){
         log.info(cdrs.toString());
         processOurSubscribersCdr(cdrs);
