@@ -56,4 +56,15 @@ public class HRSServiceClient {
                 .retrieve()
                 .body(LocalDateTime.class);
     }
+
+    public SubscriberTariffDTO getSubscriberTariffInfo(Long subscriberId) {
+        return restClientBuilder
+                .build()
+                .get()
+                .uri(BASE_URL, uriBuilder -> uriBuilder
+                        .path("/subscribers/{subscriberId}")
+                        .build(subscriberId))
+                .retrieve()
+                .body(SubscriberTariffDTO.class);
+    }
 }

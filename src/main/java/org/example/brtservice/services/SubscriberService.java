@@ -52,14 +52,17 @@ public class SubscriberService {
 
         if (Objects.isNull(subscriberRepository.findSubscriberById(newSubscriber.getId()))) throw new SubscriberCreationFailedException("Cant set tariff for subscriber. Subscriber was not saved.");
 
-        hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
+        if (Objects.nonNull(subscriberDTO.tariffId())) hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
 
     }
+    
+    
 
     public Optional<Subscriber> findSubscriberByMsisdn(String msisdn){
         return subscriberRepository.findSubscriberByMsisdn(msisdn);
     }
 
+    //TODO make atomic updates
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void addAmountToBalance(Long subscriberId, BigDecimal chargeAmount){
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
@@ -67,6 +70,7 @@ public class SubscriberService {
         subscriberRepository.save(subscriber);
     }
 
+    //TODO make atomic updates
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void subtractAmountFromBalance(Long subscriberId, BigDecimal chargeAmount){
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
@@ -77,5 +81,20 @@ public class SubscriberService {
 
     public boolean isSubscriberPresent(String msisdn){
         return subscriberRepository.findSubscriberByMsisdn(msisdn).isPresent();
+    }
+
+    public void setTariffForSubscriber(Long subscriberId, Long tariffId) {
+        LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
+        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
+        subscriber.setTariffId(tariffId);
+        subscriberRepository.save(subscriber);
+        hrsServiceClient.setTariffForSubscriber(subscriberId,tariffId,systemDatetime);
+
+    }
+
+    public String getSubscriberAndTariffInfo(Long subscriberId) {
+        subscriberRepository.findSubscriberById(subscriberId);
+        hrsServiceClient.getSubscriberTariffInfo(subscriberId);
+        return null;
     }
 }

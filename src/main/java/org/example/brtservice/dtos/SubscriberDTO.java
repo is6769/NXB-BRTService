@@ -1,16 +1,17 @@
 package org.example.brtservice.dtos;
 
 import org.example.brtservice.entities.Subscriber;
+import org.springframework.lang.Nullable;
 
 import java.math.BigDecimal;
 
 public record SubscriberDTO(
     String msisdn,
     String firstName,
-    String secondName,
+    @Nullable String secondName,
     String surname,
-    Long tariffId,
-    BigDecimal balance
+    @Nullable Long tariffId,
+    @Nullable BigDecimal balance
 ) {
     public Subscriber toEntity(){
         return Subscriber.builder()

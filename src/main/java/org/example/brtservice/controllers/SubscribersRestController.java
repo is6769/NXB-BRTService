@@ -1,15 +1,12 @@
 package org.example.brtservice.controllers;
 
 import org.example.brtservice.dtos.SubscriberDTO;
+import org.example.brtservice.dtos.TopUpDTO;
 import org.example.brtservice.services.SubscriberService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1")
+//@RequestMapping("/v1")
 public class SubscribersRestController {
 
     private final SubscriberService subscriberService;
@@ -19,14 +16,25 @@ public class SubscribersRestController {
     }
 
     @PostMapping("subscriber")
-    public String createSubscriber(SubscriberDTO subscriberDTO){
+    public String createSubscriber(@RequestBody SubscriberDTO subscriberDTO){
         subscriberService.createSubscriber(subscriberDTO);
         return "Successfully created subscriber";
     }
 
-    @PostMapping("subscribers/{msisdn}/balance")
-    public String topUpBalance(@PathVariable String msisdn){
-        
+    @PostMapping("subscribers/{subscriberId}/balance")
+    public String topUpBalance(@PathVariable Long subscriberId, @RequestBody TopUpDTO topUpDTO){
+        subscriberService.addAmountToBalance(subscriberId,topUpDTO.amount());
         return "Successfully topped up the balance";
+    }
+
+    @PutMapping("/subscribers/{subscriberId}/tariff/{tariffId}")
+    public String setTariffForSubscriber(@PathVariable Long subscriberId, @PathVariable Long tariffId){
+        subscriberService.setTariffForSubscriber(subscriberId,tariffId);
+        return "Successfully set tariff for subscriber.";
+    }
+
+    @GetMapping("subscribers/{subscriberId}")
+    public String getSubscriberAndTariffInfo(@PathVariable Long subscriberId){
+        return subscriberService.getSubscriberAndTariffInfo(subscriberId);
     }
 }

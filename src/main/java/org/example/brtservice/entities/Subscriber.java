@@ -62,10 +62,14 @@ public class Subscriber {
     private Long tariffId;
 
     @Column(name = "balance")
-    private BigDecimal balance = new BigDecimal(100);
+    private BigDecimal balance;
 
     @Column(name = "registered_at", nullable = false, updatable = false)
-    @CreationTimestamp
     private LocalDateTime registeredAt;
+
+    @PrePersist
+    public void prePersist(){
+        if (Objects.isNull(this.balance)) balance = new BigDecimal(100);
+    }
 
 }
