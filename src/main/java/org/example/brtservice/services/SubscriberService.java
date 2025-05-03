@@ -3,8 +3,10 @@ package org.example.brtservice.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.clients.HRSServiceClient;
+import org.example.brtservice.dtos.FullSubscriberAndTariffInfoDTO;
 import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.dtos.SubscriberTariffDTO;
+import org.example.brtservice.dtos.TariffDTO;
 import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.exceptions.NoSuchSubscriberException;
 import org.example.brtservice.exceptions.SubscriberCreationFailedException;
@@ -66,7 +68,7 @@ public class SubscriberService {
     //TODO make atomic updates
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void addAmountToBalance(Long subscriberId, BigDecimal chargeAmount){
-        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
+        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant add such amount to balance. No such subscriber present."));
         subscriber.setBalance(subscriber.getBalance().add(chargeAmount));
         subscriberRepository.save(subscriber);
     }
@@ -74,8 +76,7 @@ public class SubscriberService {
     //TODO make atomic updates
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void subtractAmountFromBalance(Long subscriberId, BigDecimal chargeAmount){
-        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
-        if (Objects.isNull(subscriber)) throw new NoSuchSubscriberException("Cant subtract such amount from balance. No such subscriber present.");
+        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant subtract such amount from balance. No such subscriber present."));
         subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
         subscriberRepository.save(subscriber);
     }
@@ -86,16 +87,17 @@ public class SubscriberService {
 
     public void setTariffForSubscriber(Long subscriberId, Long tariffId) {
         LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
-        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId);
+        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant set such tariff for subscriber. No such subscriber present."));
         subscriber.setTariffId(tariffId);
         subscriberRepository.save(subscriber);
         hrsServiceClient.setTariffForSubscriber(subscriberId,tariffId,systemDatetime);
 
     }
 
-    public SubscriberTariffDTO getSubscriberAndTariffInfo(Long subscriberId) {
-        //subscriberRepository.findSubscriberById(subscriberId);
-        return hrsServiceClient.getSubscriberTariffInfo(subscriberId);
+    public FullSubscriberAndTariffInfoDTO getSubscriberAndTariffInfo(Long subscriberId) {
+        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant get info about subscriber. No such subscriber present."));
+        TariffDTO tariffDTO = hrsServiceClient.getTariffInfo(subscriberId);
+        return new FullSubscriberAndTariffInfoDTO(subscriber,tariffDTO);
 
     }
 }

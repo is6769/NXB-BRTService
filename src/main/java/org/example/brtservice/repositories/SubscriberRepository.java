@@ -43,5 +43,5 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
      */
     Optional<Subscriber> findSubscriberByMsisdn(String msisdn);
 
-    Subscriber findSubscriberById(Long id);
+    Optional<Subscriber> findSubscriberById(Long id);
 }

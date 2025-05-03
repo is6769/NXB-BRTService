@@ -3,6 +3,7 @@ package org.example.brtservice.clients;
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
 import org.example.brtservice.dtos.SubscriberTariffDTO;
+import org.example.brtservice.dtos.TariffDTO;
 import org.example.brtservice.dtos.TarifficationBillDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -67,5 +68,16 @@ public class HRSServiceClient {
                         .build(subscriberId))
                 .retrieve()
                 .body(SubscriberTariffDTO.class);
+    }
+
+    public TariffDTO getTariffInfo(Long subscriberId) {
+        return restClientBuilder
+                .build()
+                .get()
+                .uri(BASE_URL, uriBuilder -> uriBuilder
+                        .path("/subscribers/{subscriberId}/tariff")
+                        .build(subscriberId))
+                .retrieve()
+                .body(TariffDTO.class);
     }
 }

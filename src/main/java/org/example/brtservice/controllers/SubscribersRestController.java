@@ -1,5 +1,6 @@
 package org.example.brtservice.controllers;
 
+import org.example.brtservice.dtos.FullSubscriberAndTariffInfoDTO;
 import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.dtos.SubscriberTariffDTO;
 import org.example.brtservice.dtos.TopUpDTO;
@@ -35,7 +36,7 @@ public class SubscribersRestController {
     }
 
     @GetMapping("subscribers/{subscriberId}")
-    public SubscriberTariffDTO getSubscriberAndTariffInfo(@PathVariable Long subscriberId){
+    public FullSubscriberAndTariffInfoDTO getSubscriberAndTariffInfo(@PathVariable Long subscriberId){
         return subscriberService.getSubscriberAndTariffInfo(subscriberId);
     }
 }
