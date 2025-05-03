@@ -3,10 +3,9 @@ package org.example.brtservice.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.clients.HRSServiceClient;
-import org.example.brtservice.dtos.FullSubscriberAndTariffInfoDTO;
+import org.example.brtservice.dtos.fullSubscriberAndTariffInfo.FullSubscriberAndTariffInfoDTO;
 import org.example.brtservice.dtos.SubscriberDTO;
-import org.example.brtservice.dtos.SubscriberTariffDTO;
-import org.example.brtservice.dtos.TariffDTO;
+import org.example.brtservice.dtos.fullSubscriberAndTariffInfo.TariffDTO;
 import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.exceptions.NoSuchSubscriberException;
 import org.example.brtservice.exceptions.SubscriberCreationFailedException;

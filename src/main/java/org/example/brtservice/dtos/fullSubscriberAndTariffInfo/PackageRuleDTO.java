@@ -1,4 +1,4 @@
-package org.example.brtservice.dtos;
+package org.example.brtservice.dtos.fullSubscriberAndTariffInfo;
 
 import java.math.BigDecimal;
 
@@ -7,6 +7,6 @@ public record PackageRuleDTO(
         String ruleType,
         BigDecimal value,
         String unit,
-        ConditionNode condition
+        ConditionNodeDTO condition
 ) {
 }

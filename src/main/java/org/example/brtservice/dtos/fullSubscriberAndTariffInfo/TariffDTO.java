@@ -1,4 +1,4 @@
-package org.example.brtservice.dtos;
+package org.example.brtservice.dtos.fullSubscriberAndTariffInfo;
 
 import java.util.List;
 

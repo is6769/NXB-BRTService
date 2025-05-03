@@ -1,8 +1,7 @@
 package org.example.brtservice.controllers;
 
-import org.example.brtservice.dtos.FullSubscriberAndTariffInfoDTO;
+import org.example.brtservice.dtos.fullSubscriberAndTariffInfo.FullSubscriberAndTariffInfoDTO;
 import org.example.brtservice.dtos.SubscriberDTO;
-import org.example.brtservice.dtos.SubscriberTariffDTO;
 import org.example.brtservice.dtos.TopUpDTO;
 import org.example.brtservice.services.SubscriberService;
 import org.springframework.web.bind.annotation.*;
