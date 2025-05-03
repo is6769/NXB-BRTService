@@ -2,6 +2,7 @@ package org.example.brtservice.clients;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
+import org.example.brtservice.dtos.SubscriberTariffDTO;
 import org.example.brtservice.dtos.TarifficationBillDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

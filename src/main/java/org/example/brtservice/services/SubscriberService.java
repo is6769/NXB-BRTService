@@ -4,6 +4,7 @@ package org.example.brtservice.services;
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.clients.HRSServiceClient;
 import org.example.brtservice.dtos.SubscriberDTO;
+import org.example.brtservice.dtos.SubscriberTariffDTO;
 import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.exceptions.NoSuchSubscriberException;
 import org.example.brtservice.exceptions.SubscriberCreationFailedException;
@@ -92,9 +93,9 @@ public class SubscriberService {
 
     }
 
-    public String getSubscriberAndTariffInfo(Long subscriberId) {
-        subscriberRepository.findSubscriberById(subscriberId);
-        hrsServiceClient.getSubscriberTariffInfo(subscriberId);
-        return null;
+    public SubscriberTariffDTO getSubscriberAndTariffInfo(Long subscriberId) {
+        //subscriberRepository.findSubscriberById(subscriberId);
+        return hrsServiceClient.getSubscriberTariffInfo(subscriberId);
+
     }
 }
