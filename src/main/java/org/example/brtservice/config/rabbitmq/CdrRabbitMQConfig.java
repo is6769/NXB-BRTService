@@ -1,4 +1,4 @@
-package org.example.brtservice.config;
+package org.example.brtservice.config.rabbitmq;
 
 
 import org.springframework.amqp.core.*;

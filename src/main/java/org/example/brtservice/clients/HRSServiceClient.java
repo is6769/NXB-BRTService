@@ -24,15 +24,6 @@ public class HRSServiceClient {
         this.restClientBuilder = restClientBuilder;
     }
 
-    public TarifficationBillDTO chargeCdr(CallWithDefaultMetadataDTO callWithDefaultMetadataDTO){
-        return restClientBuilder
-                .build()
-                .post()
-                .uri(BASE_URL)
-                .retrieve()
-                .body(TarifficationBillDTO.class);
-    }
-
     public String setTariffForSubscriber(Long subscriberId, Long tariffId, LocalDateTime systemDatetime){
         return restClientBuilder
                 .build()
@@ -52,20 +43,8 @@ public class HRSServiceClient {
                 .uri(BASE_URL,uriBuilder -> uriBuilder
                         .path("/systemDatetime")
                         .build())
-                //.uri(URI.create(BASE_URL+"/systemDatetime"))
                 .retrieve()
                 .body(LocalDateTime.class);
-    }
-
-    public SubscriberTariffDTO getSubscriberTariffInfo(Long subscriberId) {
-        return restClientBuilder
-                .build()
-                .get()
-                .uri(BASE_URL, uriBuilder -> uriBuilder
-                        .path("/subscribers/{subscriberId}")
-                        .build(subscriberId))
-                .retrieve()
-                .body(SubscriberTariffDTO.class);
     }
 
     public TariffDTO getTariffInfo(Long subscriberId) {

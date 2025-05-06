@@ -10,6 +10,8 @@ import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.exceptions.NoSuchSubscriberException;
 import org.example.brtservice.exceptions.SubscriberCreationFailedException;
 import org.example.brtservice.repositories.SubscriberRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -28,12 +31,20 @@ import java.util.Optional;
 @Service
 public class SubscriberService {
 
+    @Value("${const.rabbitmq.subscriber.SUBSCRIBER_CREATED_EXCHANGE_NAME}")
+    private String SUBSCRIBER_CREATED_EXCHANGE_NAME;
+
+    @Value("${const.rabbitmq.subscriber.SUBSCRIBER_CREATED_ROUTING_KEY}")
+    private String SUBSCRIBER_CREATED_ROUTING_KEY;
+
     private final SubscriberRepository subscriberRepository;
     private final HRSServiceClient hrsServiceClient;
+    private final RabbitTemplate rabbitTemplate;
 
-    public SubscriberService(SubscriberRepository subscriberRepository, HRSServiceClient hrsServiceClient) {
+    public SubscriberService(SubscriberRepository subscriberRepository, HRSServiceClient hrsServiceClient, RabbitTemplate rabbitTemplate) {
         this.subscriberRepository = subscriberRepository;
         this.hrsServiceClient = hrsServiceClient;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -51,8 +62,9 @@ public class SubscriberService {
         Subscriber newSubscriber = subscriberDTO.toEntity();
         newSubscriber.setRegisteredAt(systemDatetime);
         newSubscriber = subscriberRepository.save(newSubscriber);
+        if (Objects.isNull(subscriberRepository.findSubscriberById(newSubscriber.getId()))) throw new SubscriberCreationFailedException("Cant create subscriber.");
 
-        if (Objects.isNull(subscriberRepository.findSubscriberById(newSubscriber.getId()))) throw new SubscriberCreationFailedException("Cant set tariff for subscriber. Subscriber was not saved.");
+        rabbitTemplate.convertAndSend(SUBSCRIBER_CREATED_EXCHANGE_NAME,SUBSCRIBER_CREATED_ROUTING_KEY, Map.of("subscriberId",newSubscriber.getId(),"msisdn",newSubscriber.getMsisdn()));
 
         if (Objects.nonNull(subscriberDTO.tariffId())) hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
 
