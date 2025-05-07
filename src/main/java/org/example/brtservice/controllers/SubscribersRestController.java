@@ -22,7 +22,7 @@ public class SubscribersRestController {
         return "Successfully created subscriber";
     }
 
-    @PostMapping("subscribers/{subscriberId}/balance")
+    @PatchMapping("subscribers/{subscriberId}/balance")
     public String topUpBalance(@PathVariable Long subscriberId, @RequestBody TopUpDTO topUpDTO){
         subscriberService.addAmountToBalance(subscriberId,topUpDTO.amount());
         return "Successfully topped up the balance";
