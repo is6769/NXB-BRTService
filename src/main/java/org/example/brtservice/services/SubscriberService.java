@@ -57,7 +57,7 @@ public class SubscriberService {
     }
 
 
-    public void createSubscriber(SubscriberDTO subscriberDTO) {
+    public Subscriber createSubscriber(SubscriberDTO subscriberDTO) {
         LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
         Subscriber newSubscriber = subscriberDTO.toEntity();
         newSubscriber.setRegisteredAt(systemDatetime);
@@ -68,6 +68,7 @@ public class SubscriberService {
 
         if (Objects.nonNull(subscriberDTO.tariffId())) hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
 
+        return newSubscriber;
     }
     
     

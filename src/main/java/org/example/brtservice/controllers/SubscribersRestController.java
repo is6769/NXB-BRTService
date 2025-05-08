@@ -3,6 +3,7 @@ package org.example.brtservice.controllers;
 import org.example.brtservice.dtos.fullSubscriberAndTariffInfo.FullSubscriberAndTariffInfoDTO;
 import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.dtos.TopUpDTO;
+import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.services.SubscriberService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +18,8 @@ public class SubscribersRestController {
     }
 
     @PostMapping("subscriber")
-    public String createSubscriber(@RequestBody SubscriberDTO subscriberDTO){
-        subscriberService.createSubscriber(subscriberDTO);
-        return "Successfully created subscriber";
+    public Subscriber createSubscriber(@RequestBody SubscriberDTO subscriberDTO){
+        return subscriberService.createSubscriber(subscriberDTO);
     }
 
     @PatchMapping("subscribers/{subscriberId}/balance")
