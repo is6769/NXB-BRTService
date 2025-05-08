@@ -2,7 +2,7 @@
 --changeset is6769:0001-create-table-subscribers
 create table if not exists subscribers(
     id              BIGSERIAL       PRIMARY KEY,
-    msisdn          VARCHAR(50)     NOT NULL ,
+    msisdn          VARCHAR(50)     NOT NULL UNIQUE,
     first_name      TEXT            NOT NULL,
     second_name     TEXT,
     surname         TEXT            NOT NULL,
