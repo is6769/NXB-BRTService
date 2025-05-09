@@ -4,6 +4,7 @@ import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
 import org.example.brtservice.embedded.DefaultCallMetadata;
 import org.example.brtservice.entities.Cdr;
 import org.example.brtservice.entities.Subscriber;
+import org.example.brtservice.exceptions.NoSuchSubscriberException;
 import org.example.brtservice.repositories.CdrRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +27,9 @@ public class CdrService {
         cdrRepository.save(cdr);
     }
 
-    public void saveAndFlush(Cdr cdr){
-        cdrRepository.saveAndFlush(cdr);
-    }
-
     public CallWithDefaultMetadataDTO convertToCallWithDefaultMetadataDTO(Cdr cdr) {
 
-        Subscriber subscriber = subscriberService.findSubscriberByMsisdn(cdr.getServicedMsisdn()).orElseThrow(RuntimeException::new);
+        Subscriber subscriber = subscriberService.findSubscriberByMsisdn(cdr.getServicedMsisdn()).orElseThrow(()->new NoSuchSubscriberException("Cant find serviced subscriber by msisdn"));
         boolean isOtherOur = subscriberService.isSubscriberPresent(cdr.getOtherMsisdn());
 
         DefaultCallMetadata defaultCallMetadata = new DefaultCallMetadata(
@@ -51,9 +48,5 @@ public class CdrService {
 
     private Integer calculateDurationInMinutes(LocalDateTime start, LocalDateTime finish){
         return (int) Math.ceil(Duration.between(start, finish).toSeconds()/60.0);
-    }
-
-    public void saveAll(List<Cdr> validCdrs) {
-        cdrRepository.saveAll(validCdrs);
     }
 }

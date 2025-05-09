@@ -8,7 +8,6 @@ import org.example.brtservice.services.SubscriberService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-//@RequestMapping("/v1")
 public class SubscribersRestController {
 
     private final SubscriberService subscriberService;

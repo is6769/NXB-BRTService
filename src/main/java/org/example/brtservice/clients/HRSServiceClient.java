@@ -1,12 +1,11 @@
 package org.example.brtservice.clients;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.brtservice.dtos.CallWithDefaultMetadataDTO;
-import org.example.brtservice.dtos.SubscriberTariffDTO;
 import org.example.brtservice.dtos.fullSubscriberAndTariffInfo.TariffDTO;
-import org.example.brtservice.dtos.TarifficationBillDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ public class HRSServiceClient {
                 .put()
                 .uri(BASE_URL,uriBuilder -> uriBuilder
                         .path("/subscribers/{subscriberId}/tariff/{tariffId}")
-                        .queryParam("currentUnrealDateTime",systemDatetime)
+                        .queryParam("systemDatetime",systemDatetime)
                         .build(subscriberId,tariffId))
                 .retrieve()
                 .body(String.class);
@@ -47,7 +46,7 @@ public class HRSServiceClient {
                 .body(LocalDateTime.class);
     }
 
-    public TariffDTO getTariffInfo(Long subscriberId) {
+    public TariffDTO getTariffInfoBySubscriberId(Long subscriberId) {
         return restClientBuilder
                 .build()
                 .get()
@@ -56,5 +55,21 @@ public class HRSServiceClient {
                         .build(subscriberId))
                 .retrieve()
                 .body(TariffDTO.class);
+    }
+
+    public TariffDTO getTariffInfo(Long tariffId) {
+        try {
+            return restClientBuilder
+                    .build()
+                    .get()
+                    .uri(BASE_URL, uriBuilder -> uriBuilder
+                            .path("/tariffs/{tariffId}")
+                            .build(tariffId))
+                    .retrieve()
+                    .body(TariffDTO.class);
+
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            throw e;
+        }
     }
 }

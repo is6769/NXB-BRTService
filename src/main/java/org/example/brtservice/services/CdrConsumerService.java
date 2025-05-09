@@ -50,9 +50,6 @@ public class CdrConsumerService {
     }
 
     private boolean isOur(Cdr cdr) {
-        if (subscriberService.isSubscriberPresent(cdr.getServicedMsisdn())){
-            return true;
-        }
-        return false;
+        return subscriberService.isSubscriberPresent(cdr.getServicedMsisdn());
     }
 }

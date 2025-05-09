@@ -6,21 +6,21 @@ import org.example.brtservice.dtos.ExceptionDTO;
 import org.example.brtservice.exceptions.NoSuchSubscriberException;
 import org.example.brtservice.exceptions.SubscriberCreationFailedException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.LocalDateTime;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @RestControllerAdvice
-public class ExceptionsHandler {
+public class RestExceptionsHandler {
 
     @ExceptionHandler(exception = NoSuchSubscriberException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionDTO handleNoSuchSubscriberException(HttpServletRequest request, Exception ex){
         return new ExceptionDTO(
-                LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 "NOT_FOUND",
                 ex.getMessage(),
@@ -32,11 +32,18 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionDTO handleSubscriberCreationFailedException(HttpServletRequest request, Exception ex){
         return new ExceptionDTO(
-                LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_SERVER_ERROR",
                 ex.getMessage(),
                 request.getRequestURL().toString()
         );
+    }
+
+    @ExceptionHandler(exception = {HttpClientErrorException.class, HttpServerErrorException.class})
+    public ResponseEntity<byte[]> handleHttpClientExceptions(HttpStatusCodeException ex){
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .headers(headers -> headers.addAll(ex.getResponseHeaders()))
+                .body(ex.getResponseBodyAsByteArray());
     }
 }

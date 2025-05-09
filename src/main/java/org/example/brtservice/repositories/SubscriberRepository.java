@@ -1,11 +1,16 @@
 package org.example.brtservice.repositories;
 
 
+import jakarta.persistence.LockModeType;
 import org.example.brtservice.entities.Subscriber;
 import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,4 +49,16 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
     Optional<Subscriber> findSubscriberByMsisdn(String msisdn);
 
     Optional<Subscriber> findSubscriberById(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select s from Subscriber s where s.id=:id")
+    Optional<Subscriber> findSubscriberByIdWithLock(Long id);
+
+//    @Query("UPDATE Subscriber s set s.balance=s.balance+:amount where s.id=:subscriberId")
+//    @Modifying(clearAutomatically=true, flushAutomatically=true)
+//    void atomicAddToBalance(Long subscriberId,BigDecimal amount);
+//
+//    @Query("UPDATE Subscriber s set s.balance=s.balance-:amount where s.id=:subscriberId")
+//    @Modifying(clearAutomatically=true, flushAutomatically=true)
+//    void atomicSubtractFromBalance(Long subscriberId,BigDecimal amount);
 }

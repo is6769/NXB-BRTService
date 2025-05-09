@@ -13,7 +13,6 @@ import org.example.brtservice.repositories.SubscriberRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -56,13 +55,13 @@ public class SubscriberService {
         return subscriberRepository.findAll();
     }
 
-
+    //check for transactional. cant get id of new subscriber because it hasnt been yet initialized
     public Subscriber createSubscriber(SubscriberDTO subscriberDTO) {
         LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
         Subscriber newSubscriber = subscriberDTO.toEntity();
         newSubscriber.setRegisteredAt(systemDatetime);
         newSubscriber = subscriberRepository.save(newSubscriber);
-        if (Objects.isNull(subscriberRepository.findSubscriberById(newSubscriber.getId()))) throw new SubscriberCreationFailedException("Cant create subscriber.");
+        subscriberRepository.findSubscriberById(newSubscriber.getId()).orElseThrow(()->new SubscriberCreationFailedException("Cant create subscriber."));
 
         rabbitTemplate.convertAndSend(SUBSCRIBER_CREATED_EXCHANGE_NAME,SUBSCRIBER_CREATED_ROUTING_KEY, Map.of("subscriberId",newSubscriber.getId(),"msisdn",newSubscriber.getMsisdn()));
 
@@ -77,18 +76,18 @@ public class SubscriberService {
         return subscriberRepository.findSubscriberByMsisdn(msisdn);
     }
 
-    //TODO make atomic updates
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+
+    @Transactional
     public void addAmountToBalance(Long subscriberId, BigDecimal chargeAmount){
-        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant add such amount to balance. No such subscriber present."));
+        Subscriber subscriber = subscriberRepository.findSubscriberByIdWithLock(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant add such amount to balance. No such subscriber present."));
         subscriber.setBalance(subscriber.getBalance().add(chargeAmount));
         subscriberRepository.save(subscriber);
     }
 
-    //TODO make atomic updates
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+
+    @Transactional
     public void subtractAmountFromBalance(Long subscriberId, BigDecimal chargeAmount){
-        Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant subtract such amount from balance. No such subscriber present."));
+        Subscriber subscriber = subscriberRepository.findSubscriberByIdWithLock(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant subtract such amount from balance. No such subscriber present."));
         subscriber.setBalance(subscriber.getBalance().subtract(chargeAmount));
         subscriberRepository.save(subscriber);
     }
@@ -100,6 +99,9 @@ public class SubscriberService {
     public void setTariffForSubscriber(Long subscriberId, Long tariffId) {
         LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant set such tariff for subscriber. No such subscriber present."));
+
+        hrsServiceClient.getTariffInfo(tariffId);//to check that tariff really exists
+
         subscriber.setTariffId(tariffId);
         subscriberRepository.save(subscriber);
         hrsServiceClient.setTariffForSubscriber(subscriberId,tariffId,systemDatetime);
@@ -108,7 +110,7 @@ public class SubscriberService {
 
     public FullSubscriberAndTariffInfoDTO getSubscriberAndTariffInfo(Long subscriberId) {
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant get info about subscriber. No such subscriber present."));
-        TariffDTO tariffDTO = hrsServiceClient.getTariffInfo(subscriberId);
+        TariffDTO tariffDTO = hrsServiceClient.getTariffInfoBySubscriberId(subscriberId);
         return new FullSubscriberAndTariffInfoDTO(subscriber,tariffDTO);
 
     }
