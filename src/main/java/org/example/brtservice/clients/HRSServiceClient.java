@@ -67,26 +67,26 @@ public class HRSServiceClient {
                         .path("/tariffs/{tariffId}")
                         .build(tariffId))
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-                    byte[] bodyBytes = response.getBody().readAllBytes();
-                    throw HttpClientErrorException.create(
-                            response.getStatusCode(),
-                            response.getStatusText(),
-                            response.getHeaders(),
-                            bodyBytes,
-                            null
-                    );
-                })
-                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                    byte[] bodyBytes = response.getBody().readAllBytes();
-                    throw HttpServerErrorException.create(
-                            response.getStatusCode(),
-                            response.getStatusText(),
-                            response.getHeaders(),
-                            bodyBytes,
-                            null
-                    );
-                })
+//                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+//                    byte[] bodyBytes = response.getBody().readAllBytes();
+//                    throw HttpClientErrorException.create(
+//                            response.getStatusCode(),
+//                            response.getStatusText(),
+//                            response.getHeaders(),
+//                            bodyBytes,
+//                            null
+//                    );
+//                })
+//                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+//                    byte[] bodyBytes = response.getBody().readAllBytes();
+//                    throw HttpServerErrorException.create(
+//                            response.getStatusCode(),
+//                            response.getStatusText(),
+//                            response.getHeaders(),
+//                            bodyBytes,
+//                            null
+//                    );
+//                })
                 .body(TariffDTO.class);
     }
 }
