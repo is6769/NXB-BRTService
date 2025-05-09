@@ -8,6 +8,7 @@ import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.dtos.fullSubscriberAndTariffInfo.TariffDTO;
 import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.exceptions.NoSuchSubscriberException;
+import org.example.brtservice.exceptions.SubscriberAlreadyExistsException;
 import org.example.brtservice.exceptions.SubscriberCreationFailedException;
 import org.example.brtservice.repositories.SubscriberRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -58,14 +59,22 @@ public class SubscriberService {
     //check for transactional. cant get id of new subscriber because it hasnt been yet initialized
     public Subscriber createSubscriber(SubscriberDTO subscriberDTO) {
         LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
+
         Subscriber newSubscriber = subscriberDTO.toEntity();
+
+        String msisdn = newSubscriber.getMsisdn();
+        if (findSubscriberByMsisdn(msisdn).isPresent()) throw new SubscriberAlreadyExistsException("Subscriber with such msisdn: %s already exists.".formatted(msisdn));
+        Long tariffId = newSubscriber.getTariffId();
+        if (Objects.nonNull(tariffId)) hrsServiceClient.getTariffInfo(tariffId);//to check that tariff really exists
+
+
         newSubscriber.setRegisteredAt(systemDatetime);
         newSubscriber = subscriberRepository.save(newSubscriber);
         subscriberRepository.findSubscriberById(newSubscriber.getId()).orElseThrow(()->new SubscriberCreationFailedException("Cant create subscriber."));
 
-        rabbitTemplate.convertAndSend(SUBSCRIBER_CREATED_EXCHANGE_NAME,SUBSCRIBER_CREATED_ROUTING_KEY, Map.of("subscriberId",newSubscriber.getId(),"msisdn",newSubscriber.getMsisdn()));
+        rabbitTemplate.convertAndSend(SUBSCRIBER_CREATED_EXCHANGE_NAME,SUBSCRIBER_CREATED_ROUTING_KEY, Map.of("subscriberId",newSubscriber.getId(),"msisdn",msisdn));
 
-        if (Objects.nonNull(subscriberDTO.tariffId())) hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),newSubscriber.getTariffId(),systemDatetime);
+        if (Objects.nonNull(subscriberDTO.tariffId())) hrsServiceClient.setTariffForSubscriber(newSubscriber.getId(),tariffId,systemDatetime);
 
         return newSubscriber;
     }
@@ -110,7 +119,7 @@ public class SubscriberService {
 
     public FullSubscriberAndTariffInfoDTO getSubscriberAndTariffInfo(Long subscriberId) {
         Subscriber subscriber = subscriberRepository.findSubscriberById(subscriberId).orElseThrow(()->new NoSuchSubscriberException("Cant get info about subscriber. No such subscriber present."));
-        TariffDTO tariffDTO = hrsServiceClient.getTariffInfoBySubscriberId(subscriberId);
+        TariffDTO tariffDTO = (Objects.nonNull(subscriber.getTariffId())) ? hrsServiceClient.getTariffInfoBySubscriberId(subscriberId) : null;
         return new FullSubscriberAndTariffInfoDTO(subscriber,tariffDTO);
 
     }

@@ -3,8 +3,10 @@ package org.example.brtservice.exceptions.handlers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.example.brtservice.clients.HRSServiceClient;
 import org.example.brtservice.dtos.ExceptionDTO;
 import org.example.brtservice.exceptions.NoSuchSubscriberException;
+import org.example.brtservice.exceptions.SubscriberAlreadyExistsException;
 import org.example.brtservice.exceptions.SubscriberCreationFailedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,16 +18,21 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
-import java.util.Map;
-
 @Slf4j
 @RestControllerAdvice
 public class RestExceptionsHandler {
+
+    private final HRSServiceClient hrsServiceClient;
+
+    public RestExceptionsHandler(HRSServiceClient hrsServiceClient) {
+        this.hrsServiceClient = hrsServiceClient;
+    }
 
     @ExceptionHandler(exception = NoSuchSubscriberException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionDTO handleNoSuchSubscriberException(HttpServletRequest request, Exception ex){
         return new ExceptionDTO(
+                hrsServiceClient.getSystemDatetime(),
                 HttpStatus.NOT_FOUND.value(),
                 "NOT_FOUND",
                 ex.getMessage(),
@@ -37,8 +44,21 @@ public class RestExceptionsHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionDTO handleSubscriberCreationFailedException(HttpServletRequest request, Exception ex){
         return new ExceptionDTO(
+                hrsServiceClient.getSystemDatetime(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_SERVER_ERROR",
+                ex.getMessage(),
+                request.getRequestURL().toString()
+        );
+    }
+
+    @ExceptionHandler(exception = SubscriberAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionDTO handleSubscriberAlreadyExistsException(HttpServletRequest request, Exception ex){
+        return new ExceptionDTO(
+                hrsServiceClient.getSystemDatetime(),
+                HttpStatus.BAD_REQUEST.value(),
+                "BAD_REQUEST",
                 ex.getMessage(),
                 request.getRequestURL().toString()
         );
