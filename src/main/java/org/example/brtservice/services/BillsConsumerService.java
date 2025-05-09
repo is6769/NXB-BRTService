@@ -19,10 +19,6 @@ public class BillsConsumerService {
     @RabbitListener(queues = "${const.rabbitmq.bills.BILLS_QUEUE_NAME}", errorHandler = "rabbitExceptionsHandler")
     public void consumeBill(TarifficationBillDTO bill){
         log.info(bill.toString());
-        try {
-            subscriberService.subtractAmountFromBalance(bill.subscriberId(), bill.amount());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
+        subscriberService.subtractAmountFromBalance(bill.subscriberId(), bill.amount());
     }
 }
