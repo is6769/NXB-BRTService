@@ -4,16 +4,10 @@ import org.example.brtservice.dtos.SubscriberDTO;
 import org.example.brtservice.entities.Subscriber;
 import org.example.brtservice.services.SubscriberService;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class InitUtil implements CommandLineRunner{
@@ -25,7 +19,7 @@ public class InitUtil implements CommandLineRunner{
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         List<SubscriberDTO> subscriberDTOs = List.of(
                 new SubscriberDTO("79000000001", "Иван", "Иванович", "Петров", 1L, new BigDecimal("100.00")),
                 new SubscriberDTO("79000000002", "Анна", "Сергеевна", "Смирнова", 2L, new BigDecimal("100.00")),

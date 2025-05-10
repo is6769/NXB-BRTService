@@ -3,14 +3,10 @@ package org.example.brtservice.clients;
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.dtos.fullSubscriberAndTariffInfo.TariffDTO;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Slf4j
 @Component

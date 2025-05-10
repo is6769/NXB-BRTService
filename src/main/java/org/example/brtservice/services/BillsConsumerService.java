@@ -2,7 +2,6 @@ package org.example.brtservice.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.brtservice.dtos.TarifficationBillDTO;
-import org.example.brtservice.entities.Subscriber;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
