@@ -50,12 +50,4 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Subscriber s where s.id=:id")
     Optional<Subscriber> findSubscriberByIdWithLock(Long id);
-
-//    @Query("UPDATE Subscriber s set s.balance=s.balance+:amount where s.id=:subscriberId")
-//    @Modifying(clearAutomatically=true, flushAutomatically=true)
-//    void atomicAddToBalance(Long subscriberId,BigDecimal amount);
-//
-//    @Query("UPDATE Subscriber s set s.balance=s.balance-:amount where s.id=:subscriberId")
-//    @Modifying(clearAutomatically=true, flushAutomatically=true)
-//    void atomicSubtractFromBalance(Long subscriberId,BigDecimal amount);
 }
