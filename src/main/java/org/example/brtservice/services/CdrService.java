@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+/**
+ * Сервис для работы с CDR (Call Detail Record).
+ * Предоставляет методы для сохранения CDR и преобразования их в DTO с метаданными звонка.
+ */
 @Service
 public class CdrService {
 
@@ -26,6 +30,15 @@ public class CdrService {
         cdrRepository.save(cdr);
     }
 
+    /**
+     * Преобразует {@link Cdr} в {@link CallWithDefaultMetadataDTO}.
+     * Определяет, является ли второй участник звонка абонентом "Ромашки",
+     * и вычисляет продолжительность звонка.
+     *
+     * @param cdr объект {@link Cdr} для преобразования.
+     * @return {@link CallWithDefaultMetadataDTO} с информацией о звонке и метаданными.
+     * @throws NoSuchSubscriberException если обслуживаемый абонент (servicedMsisdn) не найден.
+     */
     public CallWithDefaultMetadataDTO convertToCallWithDefaultMetadataDTO(Cdr cdr) {
 
         Subscriber subscriber = subscriberService.findSubscriberByMsisdn(cdr.getServicedMsisdn()).orElseThrow(()->new NoSuchSubscriberException("Cant find serviced subscriber by msisdn"));
@@ -45,6 +58,12 @@ public class CdrService {
         return new CallWithDefaultMetadataDTO(subscriber.getId(), defaultCallMetadata);
     }
 
+    /**
+     * Вычисляет продолжительность звонка в минутах, округляя в большую сторону.
+     * @param start дата и время начала звонка.
+     * @param finish дата и время окончания звонка.
+     * @return продолжительность звонка в минутах.
+     */
     private Integer calculateDurationInMinutes(LocalDateTime start, LocalDateTime finish){
         return (int) Math.ceil(Duration.between(start, finish).toSeconds()/60.0);
     }

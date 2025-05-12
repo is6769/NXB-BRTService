@@ -14,10 +14,20 @@ public class RabbitExceptionsHandler implements RabbitListenerErrorHandler {
 
     private final DLQMessagePublisher dlqMessagePublisher;
 
-    public RabbitExceptionsHandler(DLQMessagePublisher dlqMessagePublisher) {
+        public RabbitExceptionsHandler(DLQMessagePublisher dlqMessagePublisher) {
         this.dlqMessagePublisher = dlqMessagePublisher;
     }
 
+    /**
+     * Обрабатывает ошибку, возникшую в слушателе RabbitMQ.
+     * Логирует ошибку и публикует исходное сообщение в DLQ.
+     *
+     * @param amqpMessage исходное сообщение AMQP.
+     * @param message Spring сообщение, связанное с ошибкой.
+     * @param exception исключение, вызвавшее ошибку.
+     * @return всегда возвращает null, так как обработка ошибки делегируется DLQ.
+     * @throws Exception если возникает ошибка при публикации в DLQ (хотя это маловероятно).
+     */
     @Override
     public Object handleError(Message amqpMessage, Channel channel, org.springframework.messaging.Message<?> message, ListenerExecutionFailedException exception) throws Exception {
         Throwable cause = exception.getCause();

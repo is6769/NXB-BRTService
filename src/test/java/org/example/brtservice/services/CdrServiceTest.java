@@ -19,6 +19,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Тесты для класса {@link CdrService}.
+ * Проверяют корректность преобразования CDR в DTO с метаданными звонка
+ * и логику определения оператора другого абонента.
+ */
 @ExtendWith(MockitoExtension.class)
 class CdrServiceTest {
 

@@ -32,6 +32,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+/**
+ * Тесты для класса {@link SubscriberService}.
+ * Проверяют корректность создания, обновления и поиска абонентов,
+ * а также взаимодействия с другими сервисами (HRS, RabbitMQ).
+ */
 @ExtendWith(MockitoExtension.class)
 class SubscriberServiceTest {
 
