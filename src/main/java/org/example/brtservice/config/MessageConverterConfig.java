@@ -6,6 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+/**
+ * Конфигурация конвертера сообщений для RabbitMQ.
+ * Определяет, как сообщения будут сериализованы и десериализованы.
+ */
 @Configuration
 public class MessageConverterConfig {
 

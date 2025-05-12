@@ -6,6 +6,10 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+/**
+ * Встраиваемый класс, представляющий метаданные стандартного звонка.
+ * Используется для хранения информации о звонках в других сущностях.
+ */
 @Data
 @Builder
 @AllArgsConstructor

@@ -56,7 +56,7 @@ public class SubscriberService {
         return subscriberRepository.findAll();
     }
 
-    //check for transactional. cant get id of new subscriber because it hasnt been yet initialized
+
     public Subscriber createSubscriber(SubscriberDTO subscriberDTO) {
         LocalDateTime systemDatetime=hrsServiceClient.getSystemDatetime();
 

@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Утилитарный класс для инициализации начальных данных при запуске приложения.
+ */
 @Component
 public class InitUtil implements CommandLineRunner{
 
@@ -18,6 +21,11 @@ public class InitUtil implements CommandLineRunner{
         this.subscriberService = subscriberService;
     }
 
+    /**
+     * Выполняется при запуске приложения.
+     * Если в базе данных нет абонентов, создает предопределенный список абонентов.
+     * @param args аргументы командной строки.
+     */
     @Override
     public void run(String... args) {
         List<SubscriberDTO> subscriberDTOs = List.of(

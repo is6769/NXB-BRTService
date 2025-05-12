@@ -9,19 +9,29 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Индикатор состояния для проверки регистрации сервиса в Eureka.
+ * Реализует {@link HealthIndicator} для интеграции с Spring Boot Actuator.
+ */
 @Component
 public class EurekaRegistrationHealthIndicator implements HealthIndicator {
 
+    /**
+     * Имя текущего сервиса, используемое для поиска в Eureka.
+     */
     @Value("${spring.application.name}")
     private String serviceName;
 
     private final EurekaDiscoveryClient eurekaDiscoveryClient;
 
-
     public EurekaRegistrationHealthIndicator(EurekaDiscoveryClient eurekaDiscoveryClient) {
         this.eurekaDiscoveryClient = eurekaDiscoveryClient;
     }
 
+    /**
+     * Проверяет состояние регистрации сервиса в Eureka.
+     * @return {@link Health} объект, указывающий на состояние (UP или DOWN) и детали.
+     */
     @Override
     public Health health() {
         try {

@@ -18,6 +18,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
+/**
+ * Глобальный обработчик исключений для REST контроллеров.
+ * Перехватывает специфичные исключения приложения и HTTP клиентские/серверные ошибки.
+ */
 @Slf4j
 @RestControllerAdvice
 public class RestExceptionsHandler {
@@ -28,6 +32,13 @@ public class RestExceptionsHandler {
         this.hrsServiceClient = hrsServiceClient;
     }
 
+    /**
+     * Обрабатывает исключение {@link NoSuchSubscriberException}.
+     * Возвращает HTTP статус 404 (Not Found).
+     * @param request HTTP запрос.
+     * @param ex перехваченное исключение.
+     * @return {@link ExceptionDTO} с деталями ошибки.
+     */
     @ExceptionHandler(exception = NoSuchSubscriberException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionDTO handleNoSuchSubscriberException(HttpServletRequest request, Exception ex){
@@ -40,6 +51,13 @@ public class RestExceptionsHandler {
         );
     }
 
+    /**
+     * Обрабатывает исключение {@link SubscriberCreationFailedException}.
+     * Возвращает HTTP статус 500 (Internal Server Error).
+     * @param request HTTP запрос.
+     * @param ex перехваченное исключение.
+     * @return {@link ExceptionDTO} с деталями ошибки.
+     */
     @ExceptionHandler(exception = SubscriberCreationFailedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionDTO handleSubscriberCreationFailedException(HttpServletRequest request, Exception ex){
@@ -52,6 +70,13 @@ public class RestExceptionsHandler {
         );
     }
 
+    /**
+     * Обрабатывает исключение {@link SubscriberAlreadyExistsException}.
+     * Возвращает HTTP статус 400 (Bad Request).
+     * @param request HTTP запрос.
+     * @param ex перехваченное исключение.
+     * @return {@link ExceptionDTO} с деталями ошибки.
+     */
     @ExceptionHandler(exception = SubscriberAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionDTO handleSubscriberAlreadyExistsException(HttpServletRequest request, Exception ex){
@@ -64,6 +89,12 @@ public class RestExceptionsHandler {
         );
     }
 
+    /**
+     * Обрабатывает исключения {@link HttpClientErrorException} и {@link HttpServerErrorException}.
+     * Проксирует оригинальный ответ от нижележащего сервиса, включая статус, заголовки и тело ответа.
+     * @param ex перехваченное HTTP исключение.
+     * @return {@link ResponseEntity} с оригинальными данными ошибки.
+     */
     @ExceptionHandler(exception = {HttpClientErrorException.class, HttpServerErrorException.class})
     public ResponseEntity<byte[]> handleHttpClientExceptions(HttpStatusCodeException ex){
         HttpHeaders originalHeaders = ex.getResponseHeaders();
